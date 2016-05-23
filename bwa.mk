@@ -4,11 +4,11 @@
 # 
 
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
-ifeq ($(findstring Makefile.ngsvars,$(MAKEFILE_LIST)),)
-include $(MAKEDIR)Makefile.ngsvars
+ifeq ($(findstring ngsvars.mk,$(MAKEFILE_LIST)),)
+include $(MAKEDIR)ngsvars.mk
 endif
-ifeq ($(findstring Makefile.samtools,$(MAKEFILE_LIST)),)
-include $(MAKEDIR)Makefile.samtools
+ifeq ($(findstring samtools.mk,$(MAKEFILE_LIST)),)
+include $(MAKEDIR)samtools.mk
 endif
 
 # bwa
@@ -38,7 +38,7 @@ print-%:
 	@echo '$*=$($*)'
 
 bwa-header:
-	@echo -e "\nMakefile.bwa options"
+	@echo -e "\nbwa.mk options"
 	@echo "===================="
 
 

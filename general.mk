@@ -203,7 +203,7 @@ print-%:
 general-settings: general-header print-AWK print-CAT print-ZCAT print-GREP print-GZIP print-GZIP_OPTIONS print-SBATCH print-SBATCH_OPTIONS general-slurm-header print-SLURM_PARTITION print-SLURM_CLUSTER print-SLURM_N_CORES print-SLURM_N_NODES print-SLURM_ACCOUNT print-SLURM_WORKDIR print-SLURM_USER print-SLURM_MAILUSER print-SLURM_MAILTYPE print-SLURM_TIME print-SLURM_JOBNAME print-SLURM_OUT print-SLURM_ERR print-SLURM_MODULES print-SLURM_MAKE_J print-SLURM_MAKE_OPTIONS print-SLURM_EXTRA_HEADER print-SLURM_PREHOOK
 
 general-header:
-	@echo -e "\nMakefile.general options"
+	@echo -e "\ngeneral.mk options"
 	@echo "========================"
 
 

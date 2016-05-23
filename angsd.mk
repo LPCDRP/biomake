@@ -1,10 +1,10 @@
 
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
-ifeq ($(findstring Makefile.ngsvars,$(MAKEFILE_LIST)),)
-include $(MAKEDIR)Makefile.ngsvars
+ifeq ($(findstring ngsvars.mk,$(MAKEFILE_LIST)),)
+include $(MAKEDIR)ngsvars.mk
 endif
-ifeq ($(findstring Makefile.general,$(MAKEFILE_LIST)),)
-include $(MAKEDIR)Makefile.general
+ifeq ($(findstring general.mk,$(MAKEFILE_LIST)),)
+include $(MAKEDIR)general.mk
 endif
 
 # Angsd search path. Since some of the programs are located in the
@@ -333,7 +333,7 @@ print-%:
 angsd-settings: angsd-header print-ANGSD_PATH print-ANGSD print-ANGSD_EMOPTIM print-ANGSD_EMOPTIM2 print-ANGSD_OPTIMSFS print-ANGSD_BGID print-ANGSD_CALCSTAT angsd-general-options print-ANGSD_OPTION_THREADS print-ANGSD_OPTION_GL print-ANGSD_OPTION_MAF print-ANGSD_OPTION_MAJORMINOR print-ANGSD_OPTION_REALSFS print-ANGSD_OPTION_ANC print-ANGSD_OPTION_REF print-ANGSD_OPTION_WINDOW print-ANGSD_OPTION_STEP print-ANGSD_OPTION_MAXITER print-ANGSD_OPTION_NCHR print-ANGSD_OPTION_NSITES print-ANGSD_OPTION_CHR angsd-program-options print-ANGSD_REALSFS_OPTIONS print-ANGSD_EMOPTIM2_OPTIONS print-ANGSD_EMOPTIM_OPTIONS print-ANGSD_OPTIMSFS_OPTIONS print-ANGSD_DOTHETAS_OPTIONS print-ANGSD_DOMAFS_OPTIONS print-ANGSD_DOCOUNTS_OPTIONS print-ANGSD_BGID_DOSTAT_OPTIONS angsd-utility-vars  print-ANGSD_POPULATIONS  print-ANGSD_CHR_ENUM_FROM print-ANGSD_CHR_ENUM_TO print-ANGSD_CHR_ENUM print-ANGSD_CHR_LABEL print-ANGSD_CHROMOSOMES_EXTRA utility-programs print-NGSTOOLS_PATH print-NGSTOOLS_NGSFST print-NGSTOOLS_OPTION_BLOCK_SIZE print-NGSTOOLS_OPTION_NSITES print-GEM_PATH print-GEM_INDEXER_OPTIONS print-GEM_MAPPABILITY_OPTIONS print-NGSTK
 
 angsd-header:
-	@echo -e "\nMakefile.angsd options"
+	@echo -e "\nangsd.mk options"
 	@echo "========================"
 
 angsd-general-options:

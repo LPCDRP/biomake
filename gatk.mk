@@ -5,8 +5,8 @@
 
 # http://blog.jgc.org/2007/01/what-makefile-am-i-in.html
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
-ifeq ($(findstring Makefile.ngsvars,$(MAKEFILE_LIST)),)
-include $(MAKEDIR)Makefile.ngsvars
+ifeq ($(findstring ngsvars.mk,$(MAKEFILE_LIST)),)
+include $(MAKEDIR)ngsvars.mk
 endif
 
 # GATK_HOME variable
@@ -182,7 +182,7 @@ print-%:
 	@echo '$*=$($*)'
 
 gatk-header:
-	@echo -e "\nMakefile.gatk options"
+	@echo -e "\ngatk.mk options"
 	@echo "====================="
 
 gatk-settings: gatk-header print-GATK_HOME print-GATK_JAVA_MEM print-GATK_JAR print-GATK_JAVA_TMPDIR print-GATK_COMMAND print-GATK_REF print-GATK_DBSNP print-GATK_TARGET_REGIONS print-GATK_KNOWN_SITES print-GATK_THREADS print-GATK_UNIFIEDGENOTYPER_OPTIONS print-GATK_READBACKEDPHASING_OPTIONS print-GATK_VCFSUFFIX print-GATK_SELECTSNPVARIANTS_OPTIONS print-GATK_BAM_LIST print-GATK_REALIGN_TARGET_CREATOR_OPTIONS print-GATK_INDELREALIGNER_OPTIONS print-GATK_BASERECALIBRATOR_OPTIONS print-GATK_PRINTREADS_OPTIONS print-GATK_CLIPREADS_OPTIONS print-GATK_VARIANTFILTRATION_OPTIONS print-GATK_VARIANT_EVAL_OPTIONS

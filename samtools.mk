@@ -9,8 +9,8 @@
 .SECONDARY:
 
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
-ifeq ($(findstring Makefile.ngsvars,$(MAKEFILE_LIST)),)
-include $(MAKEDIR)Makefile.ngsvars
+ifeq ($(findstring ngsvars.mk,$(MAKEFILE_LIST)),)
+include $(MAKEDIR)ngsvars.mk
 endif
 
 # samtools
@@ -81,7 +81,7 @@ print-%:
 	@echo '$*=$($*)'
 
 samtools-header:
-	@echo -e "\nMakefile.samtools options"
+	@echo -e "\nsamtools.mk options"
 	@echo "========================="
 
 

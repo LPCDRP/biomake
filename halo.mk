@@ -1,5 +1,5 @@
 #
-# File: Makefile.halo
+# File: halo.mk
 #
 # Description: halo pipeline make rules
 #
@@ -154,7 +154,7 @@ print-%:
 	@echo '$*=$($*)'
 
 halo-header:
-	@echo -e "\nMakefile.halo options"
+	@echo -e "\nhalo.mk options"
 	@echo "====================="
 
 halo-targets:
@@ -185,13 +185,13 @@ halo-settings: halo-header print-HALO_TARGET_PREFIX print-HALO_BATCH_SIZE print-
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
 
 # Makefile includes
-include $(MAKEDIR)Makefile.ngsvars
-include $(MAKEDIR)Makefile.general
-include $(MAKEDIR)Makefile.sequenceprocessing
-include $(MAKEDIR)Makefile.samtools
-include $(MAKEDIR)Makefile.bwa
-include $(MAKEDIR)Makefile.picard
-include $(MAKEDIR)Makefile.gatk
+include $(MAKEDIR)ngsvars.mk
+include $(MAKEDIR)general.mk
+include $(MAKEDIR)sequenceprocessing.mk
+include $(MAKEDIR)samtools.mk
+include $(MAKEDIR)bwa.mk
+include $(MAKEDIR)picard.mk
+include $(MAKEDIR)gatk.mk
 
 
 # Target rules

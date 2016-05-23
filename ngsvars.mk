@@ -87,7 +87,7 @@ print-FASTQFILES:
 	@echo -e '\nFASTQFILES=$(FASTQFILES)'
 
 ngsvars-header:
-	@echo -e "\nMakefile.ngsvars options"
+	@echo -e "\nngsvars.mk options"
 	@echo "========================"
 
 
