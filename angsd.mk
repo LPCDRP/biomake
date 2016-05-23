@@ -1,4 +1,3 @@
-#-*- makefile -*-
 
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
 ifeq ($(findstring Makefile.ngsvars,$(MAKEFILE_LIST)),)

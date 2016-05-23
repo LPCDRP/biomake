@@ -1,4 +1,3 @@
-#-*- makefile -*-
 
 #
 # bwa makefile rules

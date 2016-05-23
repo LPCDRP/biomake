@@ -1,4 +1,3 @@
-#-*- makefile -*-
 
 #
 # GATK makefile rules

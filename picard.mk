@@ -1,4 +1,3 @@
-#-*- makefile -*-
 
 #
 # picard makefile rules

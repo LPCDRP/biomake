@@ -1,5 +1,4 @@
 #!/usr/bin/make -rRf
-#-*- makefile -*-
 
 #
 # samtools makefile rules

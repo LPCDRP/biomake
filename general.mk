@@ -1,4 +1,3 @@
-#-*- makefile -*-
 
 # General rules
 

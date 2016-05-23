@@ -1,4 +1,3 @@
-#-*- makefile -*-
 
 #
 # plink makefile rules

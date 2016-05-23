@@ -1,4 +1,3 @@
-#-*- makefile -*-
 #
 #
 # ngs variable settings
