@@ -1,6 +1,8 @@
-# biomake #
+# NAME
 
-Makefile library for bioinformatics programs, with a focus on
-next-generation sequencing. See
-[the wiki](https://github.com/percyfal/biomake/wiki) for more
-information.
+make-bio - Makefile library for bioinformatics programs
+
+# DESCRIPTION
+
+This project is based on [Per Unneberg's biomake](https://github.com/percyfal/biomake).
+It provides rule definitions that help with the construction of bioinformatics pipelines.
