@@ -67,5 +67,5 @@ BLASRFLAGS += -unaligned $(BLASR_UNALIGNEDFILE)
 endif
 
 
-%.sam: $(BLASR_INPUT) $(BLASR_REF)
-	$(BLASR) $< $(word 2,$^) -sam -out $@ $(BLASRFLAGS)
+%.sam: $(BLASR_INPUT)
+	$(BLASR) $< $(BLASR_REF) -sam -out $@ $(BLASRFLAGS)
