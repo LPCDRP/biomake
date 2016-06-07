@@ -15,19 +15,13 @@ endif
 ifndef BWA
 BWA=bwa
 endif
-ifndef BWA_NPROC
-BWA_NPROC=$(NPROC)
-endif
 # -M: mark shorter split reads as secondary (compatibility with GATK and picard)
 ifndef BWA_OPTIONS
-BWA_OPTIONS=-t $(BWA_NPROC) -M
-endif
-ifndef BWA_REF
-BWA_REF=$(REF)
+BWA_OPTIONS=-t $(NPROC) -M
 endif
 
 %.bam: %$(READ1_LABEL).fastq.gz %$(READ2_LABEL).fastq.gz
-	$(BWA) mem $(BWA_OPTIONS) $(BWA_REF) $^ | $(SAMTOOLS) view -Sbh - > $@.tmp && mv $@.tmp $@
+	$(BWA) mem $(BWA_OPTIONS) $(REFERENCE) $^ | $(SAMTOOLS) view -Sbh - > $@.tmp && mv $@.tmp $@
 
 ##############################
 # settings
@@ -42,4 +36,4 @@ bwa-header:
 	@echo "===================="
 
 
-bwa-settings: bwa-header print-BWA print-BWA_NPROC print-BWA_OPTIONS print-BWA_REF
+bwa-settings: bwa-header print-BWA print-NPROC print-BWA_OPTIONS print-REFERENCE

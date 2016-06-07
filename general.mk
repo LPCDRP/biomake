@@ -11,6 +11,8 @@ NPROC ?= $(shell nproc)
 # Define variable representing space character (for use in subst calls)
 SPACE_CHAR :=
 SPACE_CHAR +=
+# Define variable for comma for same reason
+comma = ,
 
 # Utility programs
 ifndef AWK

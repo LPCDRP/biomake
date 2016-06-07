@@ -17,14 +17,8 @@ endif
 ifndef SAMTOOLS
 SAMTOOLS=samtools
 endif
-ifndef SAMTOOLS_NPROC
-SAMTOOLS_NPROC=$(NPROC)
-endif
 ifndef SAMTOOLS_OPTIONS
 SAMTOOLS_OPTIONS=
-endif
-ifndef SAMTOOLS_REF
-SAMTOOLS_REF=$(REF)
 endif
 
 # Index a FASTA file
@@ -85,4 +79,4 @@ samtools-header:
 	@echo "========================="
 
 
-samtools-settings: samtools-header print-SAMTOOLS print-SAMTOOLS_NPROC print-SAMTOOLS_OPTIONS print-SAMTOOLS_REF
+samtools-settings: samtools-header print-SAMTOOLS print-NPROC print-SAMTOOLS_OPTIONS print-REFERENCE

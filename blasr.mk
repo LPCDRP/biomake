@@ -1,10 +1,8 @@
 
 BLASR ?= blasr
-BLASR_NPROC ?= $(NPROC)
-BLASR_REF ?= $(REF)
 
-ifneq ($(BLASR_NPROC),)
-BLASRFLAGS += -nproc $(BLASR_NPROC)
+ifneq ($(NPROC),)
+BLASRFLAGS += -nproc $(NPROC)
 endif
 
 ifdef BLASR_CONCORDANT
@@ -68,4 +66,4 @@ endif
 
 
 %.sam: $(BLASR_INPUT)
-	$(BLASR) $< $(BLASR_REF) -sam -out $@ $(BLASRFLAGS)
+	$(BLASR) $< $(REFERENCE) -sam -out $@ $(BLASRFLAGS)

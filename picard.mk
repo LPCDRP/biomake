@@ -23,9 +23,6 @@ endif
 ifndef PICARD_JAVA
 PICARD_JAVA=java -Xmx$(PICARD_JAVA_MEM) -Djava.io.tmpdir=$(PICARD_JAVA_TMPDIR) -jar 
 endif
-ifndef PICARD_REF
-PICARD_REF=$(REF)
-endif
 
 # Bait and target regions
 ifndef PICARD_TARGET_REGIONS
@@ -57,10 +54,10 @@ endif
 %.dup.bam: %.bam
 	$(PICARD_JAVA) $(PICARD_HOME)/MarkDuplicates.jar I=$< O=$@.tmp $(PICARD_OPTIONS) M=$(@:.bam=).dup_metrics && mv $@.tmp $@
 
-%.interval_list: $(PICARD_REF)
+%.interval_list: $(REFERENCE)
 	$(PICARD_JAVA) $(PICARD_HOME)/CreateSequenceDictionary.jar R=$< O=$@.tmp && mv $@.tmp $@
 
-%.interval_list: %.bed $(subst .fa,.interval_list,$(PICARD_REF))
+%.interval_list: %.bed $(subst .fa,.interval_list,$(REFERENCE))
 	$(CAT) $(lastword $^) > $@.tmp
 	$(AWK) '{printf("%s\t%s\t%s\t%s\t%s\n", $$1,$$2,$$3,"+",$$4)}' $< >> $@.tmp && mv $@.tmp $@
 
@@ -68,17 +65,17 @@ endif
 # Metrics calculations
 ##############################
 %.insert_metrics: %.bam %.bai
-	$(PICARD_JAVA) $(PICARD_HOME)/CollectInsertSizeMetrics.jar $(PICARD_OPTIONS) H=$*.hist I=$< O=$@.tmp R=$(PICARD_REF) && mv $@.tmp $@
+	$(PICARD_JAVA) $(PICARD_HOME)/CollectInsertSizeMetrics.jar $(PICARD_OPTIONS) H=$*.hist I=$< O=$@.tmp R=$(REFERENCE) && mv $@.tmp $@
 
 # Dup metrics - see also %.dup.bam
 %.dup_metrics: %.bam %.bai
 	$(PICARD_JAVA) $(PICARD_HOME)/MarkDuplicates.jar $(PICARD_OPTIONS) I=$< M=$@.tmp O=$(@:.dup_metrics=).dup.bam && mv $@.tmp $@
 
 %.align_metrics: %.bam %.bai
-	$(PICARD_JAVA) $(PICARD_HOME)/CollectAlignmentSummaryMetrics.jar $(PICARD_OPTIONS) I=$< O=$@.tmp R=$(PICARD_REF) && mv $@.tmp $@
+	$(PICARD_JAVA) $(PICARD_HOME)/CollectAlignmentSummaryMetrics.jar $(PICARD_OPTIONS) I=$< O=$@.tmp R=$(REFERENCE) && mv $@.tmp $@
 
 %.hs_metrics: %.bam %.bai
-	$(PICARD_JAVA) $(PICARD_HOME)/CalculateHsMetrics.jar $(PICARD_OPTIONS) TI=$(PICARD_TARGET_REGIONS) BI=$(PICARD_BAIT_REGIONS) I=$< O=$@.tmp R=$(PICARD_REF) && mv $@.tmp $@
+	$(PICARD_JAVA) $(PICARD_HOME)/CalculateHsMetrics.jar $(PICARD_OPTIONS) TI=$(PICARD_TARGET_REGIONS) BI=$(PICARD_BAIT_REGIONS) I=$< O=$@.tmp R=$(REFERENCE) && mv $@.tmp $@
 
 # Shorthands
 ifndef PICARD_DUPMETRICS_TARGETS
@@ -164,4 +161,4 @@ picard-header:
 	@echo -e "\npicard.mk options"
 	@echo "======================="
 
-picard-settings: picard-header print-PICARD_HOME print-PICARD_JAVA_MEM print-PICARD_JAVA_TMPDIR print-PICARD_JAVA print-PICARD_REF print-PICARD_TARGET_REGIONS print-PICARD_BAIT_REGIONS print-PICARD_OPTIONS_COMMON print-PICARD_ALIGNMETRICS_TARGETS print-PICARD_DUPMETRICS_TARGETS print-PICARD_HSMETRICS_TARGETS print-PICARD_INSERTMETRICS_TARGETS print-PLOTMETRICS print-PICARD_SORTSAM_OPTIONS print-PICARD_MERGESAM_OPTIONS print-PICARD_MERGESAM_TARGETS
+picard-settings: picard-header print-PICARD_HOME print-PICARD_JAVA_MEM print-PICARD_JAVA_TMPDIR print-PICARD_JAVA print-REFERENCE print-PICARD_TARGET_REGIONS print-PICARD_BAIT_REGIONS print-PICARD_OPTIONS_COMMON print-PICARD_ALIGNMETRICS_TARGETS print-PICARD_DUPMETRICS_TARGETS print-PICARD_HSMETRICS_TARGETS print-PICARD_INSERTMETRICS_TARGETS print-PLOTMETRICS print-PICARD_SORTSAM_OPTIONS print-PICARD_MERGESAM_OPTIONS print-PICARD_MERGESAM_TARGETS

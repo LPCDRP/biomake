@@ -81,7 +81,7 @@ halo-sbatch:
 # For identification of realignment target regions
 ##############################
 ifndef GATK_UNIFIEDGENOTYPER_RAW_OPTIONS
-GATK_UNIFIEDGENOTYPER_RAW_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(GATK_NPROC) -R $(GATK_REF)
+GATK_UNIFIEDGENOTYPER_RAW_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(NPROC) -R $(REFERENCE)
 endif
 ifneq ($(GATK_DBSNP),)
 GATK_UNIFIEDGENOTYPER_RAW_OPTIONS+=--dbsnp $(GATK_DBSNP)
@@ -107,13 +107,13 @@ endif
 # 5. Clipping
 # Default recipe, set options
 ifndef GATK_CLIPREADS_OPTIONS
-GATK_CLIPREADS_OPTIONS=--cyclesToTrim 1-5 --clipRepresentation WRITE_NS -R $(GATK_REF)
+GATK_CLIPREADS_OPTIONS=--cyclesToTrim 1-5 --clipRepresentation WRITE_NS -R $(REFERENCE)
 endif
 
 # 6. Generic genotyping
 # Default recipe, modified options
 ifndef GATK_UNIFIEDGENOTYPER_OPTIONS
-GATK_UNIFIEDGENOTYPER_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(GATK_NPROC) -R $(GATK_REF) --dbsnp $(GATK_DBSNP)
+GATK_UNIFIEDGENOTYPER_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(NPROC) -R $(REFERENCE) --dbsnp $(GATK_DBSNP)
 endif
 ifneq ($(GATK_TARGET_REGIONS),)
 GATK_UNIFIEDGENOTYPER_OPTIONS+=-L $(GATK_TARGET_REGIONS)
@@ -215,7 +215,7 @@ all: $(FLOWCELL_TARGETS) $(HALO_TARGET_PREFIX).filtered.eval_metrics metrics.txt
 
 # Only define bam rule - use pipe to avoid unnecessary sam file creation
 %.trimmed.sync.bam: %$(READ1_LABEL).trimmed.sync.fastq.gz %$(READ2_LABEL).trimmed.sync.fastq.gz
-	$(BWA) mem $(BWA_OPTIONS) $(BWA_REF) $^ | $(SAMTOOLS) view -Sbh - > $@.tmp && mv $@.tmp $@
+	$(BWA) mem $(BWA_OPTIONS) $(REFERENCE) $^ | $(SAMTOOLS) view -Sbh - > $@.tmp && mv $@.tmp $@
 
 # Add read group information
 %.sort.rg.bam: %.sort.bam

@@ -25,9 +25,6 @@ endif
 ifndef GATK_COMMAND
 GATK_COMMAND=java -Xmx$(GATK_JAVA_MEM) -Djava.io.tmpdir=$(GATK_JAVA_TMPDIR) -jar $(GATK_JAR)
 endif
-ifndef GATK_REF
-GATK_REF=$(REF)
-endif
 ifndef GATK_DBSNP
 GATK_DBSNP=$(DBSNP)
 endif
@@ -40,12 +37,9 @@ endif
 
 
 # Generic program options
-ifndef GATK_NPROC
-GATK_NPROC=$(NPROC)
-endif
 
 ifndef GATK_UNIFIEDGENOTYPER_OPTIONS
-GATK_UNIFIEDGENOTYPER_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 30 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(GATK_NPROC) -R $(GATK_REF)
+GATK_UNIFIEDGENOTYPER_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 30 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(NPROC) -R $(REFERENCE)
 ifneq ($(GATK_DBSNP),)
 GATK_UNIFIEDGENOTYPER_OPTIONS+=--dbsnp $(GATK_DBSNP)
 endif
@@ -63,7 +57,7 @@ endif
 # Realign target creation 
 ##############################
 ifndef GATK_REALIGN_TARGET_CREATOR_OPTIONS
-GATK_REALIGN_TARGET_CREATOR_OPTIONS=-R $(GATK_REF)
+GATK_REALIGN_TARGET_CREATOR_OPTIONS=-R $(REFERENCE)
 endif
 ifneq ($(GATK_TARGET_REGIONS),)
 GATK_REALIGN_TARGET_CREATOR_OPTIONS+=-L $(GATK_TARGET_REGIONS)
@@ -76,7 +70,7 @@ endif
 # Indel realignment
 ##############################
 ifndef GATK_INDELREALIGNER_OPTIONS
-GATK_INDELREALIGNER_OPTIONS=-R $(GATK_REF)
+GATK_INDELREALIGNER_OPTIONS=-R $(REFERENCE)
 endif
 
 %.realign.bam: %.bam %.intervals
@@ -86,7 +80,7 @@ endif
 # Base recalibration
 ##############################
 ifndef GATK_BASERECALIBRATOR_OPTIONS
-GATK_BASERECALIBRATOR_OPTIONS=-R $(GATK_REF)
+GATK_BASERECALIBRATOR_OPTIONS=-R $(REFERENCE)
 endif
 ifneq ($(GATK_TARGET_REGIONS),)
 GATK_BASERECALIBRATOR_OPTIONS+=-L $(GATK_TARGET_REGIONS)
@@ -96,7 +90,7 @@ endif
 	$(GATK_COMMAND) -T BaseRecalibrator $(GATK_BASERECALIBRATOR_OPTIONS) $(KNOWN_SITES) -I $< -o $@.tmp && mv $@.tmp $@
 
 ifndef GATK_PRINTREADS_OPTIONS
-GATK_PRINTREADS_OPTIONS=-R $(GATK_REF)
+GATK_PRINTREADS_OPTIONS=-R $(REFERENCE)
 endif
 %.recal.bam: %.bam %.recal_data.grp
 	$(GATK_COMMAND) -T PrintReads $(GATK_PRINTREADS_OPTIONS) -I $< -BQSR $(lastword $^) -o $@.tmp && mv $@.tmp $@ && mv $@.tmp.bai $@.bai
@@ -117,7 +111,7 @@ ifndef GATK_VARIANTFILTRATION_OPTIONS
 GATK_VARIANTFILTRATION_OPTIONS=
 endif
 %.filtered.vcf: %.vcf
-	$(GATK_COMMAND) -T VariantFiltration $(GATK_VARIANTFILTRATION_OPTIONS) -R $(GATK_REF) --variant $< --out $@.tmp && mv $@.tmp $@ && mv $@.tmp.idx $@.idx
+	$(GATK_COMMAND) -T VariantFiltration $(GATK_VARIANTFILTRATION_OPTIONS) -R $(REFERENCE) --variant $< --out $@.tmp && mv $@.tmp $@ && mv $@.tmp.idx $@.idx
 
 ##############################
 # Variant evaluation
@@ -132,7 +126,7 @@ ifneq ($(GATK_TARGET_REGIONS),)
 GATK_VARIANT_EVAL_OPTIONS+=-L $(GATK_TARGET_REGIONS)
 endif
 %.eval_metrics: %.vcf
-	$(GATK_COMMAND) -T VariantEval $(GATK_VARIANT_EVAL_OPTIONS) -R $(GATK_REF) --eval $< -o $@.tmp && mv $@.tmp $@
+	$(GATK_COMMAND) -T VariantEval $(GATK_VARIANT_EVAL_OPTIONS) -R $(REFERENCE) --eval $< -o $@.tmp && mv $@.tmp $@
 
 
 ##############################
@@ -145,7 +139,7 @@ ifndef GATK_VCFSUFFIX
 GATK_VCFSUFFIX=.vcf
 endif
 %.phased.vcf: %.bam %.bai
-	$(GATK_COMMAND) -T ReadBackedPhasing $(GATK_READBACKEDPHASING_OPTIONS) -I $< --variant $*$(GATK_VCFSUFFIX) -R $(GATK_REF) > $@.tmp && mv $@.tmp $@
+	$(GATK_COMMAND) -T ReadBackedPhasing $(GATK_READBACKEDPHASING_OPTIONS) -I $< --variant $*$(GATK_VCFSUFFIX) -R $(REFERENCE) > $@.tmp && mv $@.tmp $@
 
 ##############################
 # Select snp variants
@@ -154,7 +148,7 @@ ifndef GATK_SELECTSNPVARIANTS_OPTIONS
 GATK_SELECTSNPVARIANTS_OPTIONS=--selectTypeToInclude SNP
 endif
 %.snp.vcf: %.vcf
-	$(GATK_COMMAND) -T SelectVariants $(GATK_SELECTSNPVARIANTS_OPTIONS) --variant $< --out $@.tmp -R $(GATK_REF) && mv $@.tmp $@
+	$(GATK_COMMAND) -T SelectVariants $(GATK_SELECTSNPVARIANTS_OPTIONS) --variant $< --out $@.tmp -R $(REFERENCE) && mv $@.tmp $@
 
 ##############################
 # Multi-sample variant calling
@@ -171,7 +165,7 @@ all.vcf: $(GATK_BAM_LIST) $(subst .bam,.bai,$(GATK_BAM_LIST))
 	$(GATK_COMMAND) -T UnifiedGenotyper $(GATK_UNIFIEDGENOTYPER_OPTIONS) $(addprefix -I , $(GATK_BAM_LIST)) -o $@.tmp && mv $@.tmp $@
 
 all.phased.vcf: all.vcf $(GATK_BAM_LIST) $(subst .bam,.bai,$(GATK_BAM_LIST))
-	$(GATK_COMMAND) -T ReadBackedPhasing $(GATK_READBACKEDPHASING_OPTIONS) $(addprefix -I , $(GATK_BAM_LIST)) --variant $< -R $(GATK_REF) -o $@.tmp && mv $@.tmp $@
+	$(GATK_COMMAND) -T ReadBackedPhasing $(GATK_READBACKEDPHASING_OPTIONS) $(addprefix -I , $(GATK_BAM_LIST)) --variant $< -R $(REFERENCE) -o $@.tmp && mv $@.tmp $@
 
 ##############################
 # settings
@@ -185,4 +179,4 @@ gatk-header:
 	@echo -e "\ngatk.mk options"
 	@echo "====================="
 
-gatk-settings: gatk-header print-GATK_HOME print-GATK_JAVA_MEM print-GATK_JAR print-GATK_JAVA_TMPDIR print-GATK_COMMAND print-GATK_REF print-GATK_DBSNP print-GATK_TARGET_REGIONS print-GATK_KNOWN_SITES print-GATK_NPROC print-GATK_UNIFIEDGENOTYPER_OPTIONS print-GATK_READBACKEDPHASING_OPTIONS print-GATK_VCFSUFFIX print-GATK_SELECTSNPVARIANTS_OPTIONS print-GATK_BAM_LIST print-GATK_REALIGN_TARGET_CREATOR_OPTIONS print-GATK_INDELREALIGNER_OPTIONS print-GATK_BASERECALIBRATOR_OPTIONS print-GATK_PRINTREADS_OPTIONS print-GATK_CLIPREADS_OPTIONS print-GATK_VARIANTFILTRATION_OPTIONS print-GATK_VARIANT_EVAL_OPTIONS
+gatk-settings: gatk-header print-GATK_HOME print-GATK_JAVA_MEM print-GATK_JAR print-GATK_JAVA_TMPDIR print-GATK_COMMAND print-REFERENCE print-GATK_DBSNP print-GATK_TARGET_REGIONS print-GATK_KNOWN_SITES print-NPROC print-GATK_UNIFIEDGENOTYPER_OPTIONS print-GATK_READBACKEDPHASING_OPTIONS print-GATK_VCFSUFFIX print-GATK_SELECTSNPVARIANTS_OPTIONS print-GATK_BAM_LIST print-GATK_REALIGN_TARGET_CREATOR_OPTIONS print-GATK_INDELREALIGNER_OPTIONS print-GATK_BASERECALIBRATOR_OPTIONS print-GATK_PRINTREADS_OPTIONS print-GATK_CLIPREADS_OPTIONS print-GATK_VARIANTFILTRATION_OPTIONS print-GATK_VARIANT_EVAL_OPTIONS
