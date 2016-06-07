@@ -14,8 +14,8 @@ ifndef JAVA_TMPDIR
 JAVA_TMPDIR=/tmp
 endif
 
-ifndef THREADS
-THREADS=8
+ifndef NPROC
+NPROC=8
 endif
 
 ifndef DBSNP
@@ -91,4 +91,4 @@ ngsvars-header:
 	@echo "========================"
 
 
-ngsvars-settings: ngsvars-header print-REF print-DBSNP print-JAVA_MEM print-THREADS print-TARGET_REGIONS print-BAIT_REGIONS print-INPUTDIR print-READ1_LABEL print-READ2_LABEL print-SAMPLE_PREFIX print-FLOWCELL_SUFFIX print-SAMPLES print-FLOWCELLRUNS print-FASTQFILES
+ngsvars-settings: ngsvars-header print-REF print-DBSNP print-JAVA_MEM print-NPROC print-TARGET_REGIONS print-BAIT_REGIONS print-INPUTDIR print-READ1_LABEL print-READ2_LABEL print-SAMPLE_PREFIX print-FLOWCELL_SUFFIX print-SAMPLES print-FLOWCELLRUNS print-FASTQFILES

@@ -81,7 +81,7 @@ halo-sbatch:
 # For identification of realignment target regions
 ##############################
 ifndef GATK_UNIFIEDGENOTYPER_RAW_OPTIONS
-GATK_UNIFIEDGENOTYPER_RAW_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(GATK_THREADS) -R $(GATK_REF)
+GATK_UNIFIEDGENOTYPER_RAW_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(GATK_NPROC) -R $(GATK_REF)
 endif
 ifneq ($(GATK_DBSNP),)
 GATK_UNIFIEDGENOTYPER_RAW_OPTIONS+=--dbsnp $(GATK_DBSNP)
@@ -113,7 +113,7 @@ endif
 # 6. Generic genotyping
 # Default recipe, modified options
 ifndef GATK_UNIFIEDGENOTYPER_OPTIONS
-GATK_UNIFIEDGENOTYPER_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(GATK_THREADS) -R $(GATK_REF) --dbsnp $(GATK_DBSNP)
+GATK_UNIFIEDGENOTYPER_OPTIONS=-stand_call_conf 30.0 -stand_emit_conf 10.0  --downsample_to_coverage 200 --output_mode EMIT_VARIANTS_ONLY -glm BOTH -nt $(GATK_NPROC) -R $(GATK_REF) --dbsnp $(GATK_DBSNP)
 endif
 ifneq ($(GATK_TARGET_REGIONS),)
 GATK_UNIFIEDGENOTYPER_OPTIONS+=-L $(GATK_TARGET_REGIONS)

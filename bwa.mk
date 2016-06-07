@@ -15,12 +15,12 @@ endif
 ifndef BWA
 BWA=bwa
 endif
-ifndef BWA_THREADS
-BWA_THREADS=$(THREADS)
+ifndef BWA_NPROC
+BWA_NPROC=$(NPROC)
 endif
 # -M: mark shorter split reads as secondary (compatibility with GATK and picard)
 ifndef BWA_OPTIONS
-BWA_OPTIONS=-t $(BWA_THREADS) -M
+BWA_OPTIONS=-t $(BWA_NPROC) -M
 endif
 ifndef BWA_REF
 BWA_REF=$(REF)
@@ -42,4 +42,4 @@ bwa-header:
 	@echo "===================="
 
 
-bwa-settings: bwa-header print-BWA print-BWA_THREADS print-BWA_OPTIONS print-BWA_REF
+bwa-settings: bwa-header print-BWA print-BWA_NPROC print-BWA_OPTIONS print-BWA_REF

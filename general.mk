@@ -6,6 +6,8 @@ ifndef MAKE
 MAKE=make
 endif
 
+NPROC ?= $(shell nproc)
+
 # Define variable representing space character (for use in subst calls)
 SPACE_CHAR :=
 SPACE_CHAR +=

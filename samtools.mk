@@ -17,8 +17,8 @@ endif
 ifndef SAMTOOLS
 SAMTOOLS=samtools
 endif
-ifndef SAMTOOLS_THREADS
-SAMTOOLS_THREADS=$(THREADS)
+ifndef SAMTOOLS_NPROC
+SAMTOOLS_NPROC=$(NPROC)
 endif
 ifndef SAMTOOLS_OPTIONS
 SAMTOOLS_OPTIONS=
@@ -85,4 +85,4 @@ samtools-header:
 	@echo "========================="
 
 
-samtools-settings: samtools-header print-SAMTOOLS print-SAMTOOLS_THREADS print-SAMTOOLS_OPTIONS print-SAMTOOLS_REF
+samtools-settings: samtools-header print-SAMTOOLS print-SAMTOOLS_NPROC print-SAMTOOLS_OPTIONS print-SAMTOOLS_REF
