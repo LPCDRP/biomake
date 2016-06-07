@@ -21,29 +21,34 @@ ifndef SAMTOOLS_OPTIONS
 SAMTOOLS_OPTIONS=
 endif
 
+SAMTOOLS_VIEWFLAGS += --threads $(NPROC)
+
+SAMTOOLS_SORTFLAGS += --threads $(NPROC)
+
 # Index a FASTA file
 %.fa.fai: %.fa
 	$(SAMTOOLS) faidx $<
 
 # Convert a SAM file to a BAM file
 %.bam: %.sam
-	$(SAMTOOLS) view -Sb - > $@.tmp && mv $@.tmp $@
+	$(SAMTOOLS) view $(SAMTOOLS_VIEWFLAGS) -b $< -o $@
 
 # Convert a BAM file to a SAM file
 %.bam.sam: %.bam
-	$(SAMTOOLS) view -h $< >$@
+	$(SAMTOOLS) view $(SAMTOOLS_VIEWFLAGS) -h $< >$@
 
 # Sort a SAM file and create a BAM file
 %.sort.bam: %.sam
-	$(SAMTOOLS) view -Su $< |$(SAMTOOLS) sort - $*.sort
+	$(SAMTOOLS) view $(SAMTOOLS_VIEWFLAGS) -Su $< \
+	| $(SAMTOOLS) sort $(SAMTOOLS_SORTFLAGS) - -o $@
 
 # Sort a BAM file
 %.sort.bam: %.bam
-	$(SAMTOOLS) sort $< $*.sort
+	$(SAMTOOLS) sort $(SAMTOOLS_SORTFLAGS) $< $*.sort
 
 # Sort a BAM file by query name
 %.qsort.bam: %.bam
-	$(SAMTOOLS) sort -no $< - >$@
+	$(SAMTOOLS) sort $(SAMTOOLS_SORTFLAGS) -no $< - >$@
 
 # Index a BAM file
 %.bam.bai: %.bam
