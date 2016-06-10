@@ -6,7 +6,6 @@
 
 .PHONY: samtools-header samtools-settings
 .DELETE_ON_ERROR:
-.SECONDARY:
 
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
 ifeq ($(findstring ngsvars.mk,$(MAKEFILE_LIST)),)
