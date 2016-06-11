@@ -55,9 +55,9 @@ endif
 
 # These options require or create additional files
 
-ifdef BLASR_REGIONTABLE
-BLASRFLAGS += -regionTable $(BLASR_REGIONTABLE)
-%.sam: $(BLASR_REGIONTABLE)
+ifdef PBH5_REGIONTABLE
+BLASRFLAGS += -regionTable $*.$(PBH5_REGIONTABLE)
+BLASR_REGIONTABLE = %.$(PBH5_REGIONTABLE)
 endif
 
 ifdef BLASR_UNALIGNEDFILE
@@ -66,5 +66,5 @@ endif
 
 
 .SECONDEXPANSION:
-%.sam: $(BLASR_INPUT) $$(REFERENCE)
+%.unsorted.sam: %.fofn $$(REFERENCE) $(BLASR_REGIONTABLE)
 	$(BLASR) $< $(word 2,$^) -sam -out $@ $(BLASRFLAGS)
