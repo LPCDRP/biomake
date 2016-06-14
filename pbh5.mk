@@ -70,7 +70,6 @@ PBH5_REGIONTABLE ?= filtered_regions.$(subst $(space),.,$(subst =,_,$(strip $(PB
 endif
 
 
-.SECONDARY: %.$(PBH5_REGIONTABLE)
 %.filtered_regions.fofn %.$(PBH5_REGIONTABLE): %.fofn
 	$(FILTERPLSH5) $(FILTERPLSH5FLAGS) $< \
 	--outputFofn $@ \
