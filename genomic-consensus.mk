@@ -34,7 +34,7 @@ comma=,
 
 
 .SECONDEXPANSION:
-%.fasta %.fa %.fastq %.fq %.gff: %.cmp.h5 $$(REFERENCE)
+%.fasta %.fa %.fastq %.fq %.gff: %.cmp.h5 $$(REFERENCE) $$(REFERENCE).fai
 	$(VARCALLER) $(VARCALLERFLAGS) $< \
 	--referenceFilename $(word 2,$^) \
 	-o '$@$(foreach ext,$(VARCALLER_EXTS),$*.$(ext)$(comma))'
