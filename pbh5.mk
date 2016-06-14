@@ -85,7 +85,7 @@ endif
 # Look only for bax.h5 files first.
 # They coexist with at least one bas.h5 file, but if both types are included in
 # the fofn, smrtanalysis tools will fail.
-	find $< -name "*.bax.h5" -exec realpath '{}' \; >> $@
+	find -L $< -name "*.bax.h5" -exec realpath '{}' \; >> $@
 # If there are no bax.h5 files, all the data are in bas.h5 files
 	test -s "$@" \
-	|| find $< -name "*.bas.h5" -exec realpath '{}' \; >> $@
+	|| find -L $< -name "*.bas.h5" -exec realpath '{}' \; >> $@
