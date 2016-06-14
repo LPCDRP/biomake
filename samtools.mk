@@ -25,7 +25,7 @@ SAMTOOLS_VIEWFLAGS += --threads $(NPROC)
 SAMTOOLS_SORTFLAGS += --threads $(NPROC)
 
 # Index a FASTA file
-%.fa.fai: %.fa
+%.fai: %
 	$(SAMTOOLS) faidx $<
 
 # Convert a SAM file to a BAM file
