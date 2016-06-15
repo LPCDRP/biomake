@@ -78,7 +78,6 @@ endif
 
 # Input File Preparation
 
-.INTERMEDIATE: %.fofn
 %.fofn: %
 	$(RM) $@
 # Look only for bax.h5 files first.
