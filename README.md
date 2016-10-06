@@ -1,6 +1,6 @@
 # NAME
 
-make-bio - Makefile library for bioinformatics programs
+biomake - Makefile library for bioinformatics programs
 
 # DESCRIPTION
 
