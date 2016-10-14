@@ -7,11 +7,6 @@
 .PHONY: samtools-header samtools-settings
 .DELETE_ON_ERROR:
 
-MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
-ifeq ($(findstring ngsvars.mk,$(MAKEFILE_LIST)),)
-include $(MAKEDIR)ngsvars.mk
-endif
-
 # samtools
 ifndef SAMTOOLS
 SAMTOOLS=samtools
