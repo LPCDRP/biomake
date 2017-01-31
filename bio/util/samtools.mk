@@ -15,9 +15,11 @@ ifndef SAMTOOLS_OPTIONS
 SAMTOOLS_OPTIONS=
 endif
 
+ifdef NPROC
 SAMTOOLS_VIEWFLAGS += --threads $(NPROC)
 
 SAMTOOLS_SORTFLAGS += --threads $(NPROC)
+endif
 
 # Index a FASTA file
 %.fai: %
