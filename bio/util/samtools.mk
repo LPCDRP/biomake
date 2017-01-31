@@ -36,6 +36,9 @@ SAMTOOLS_SORTFLAGS += --threads $(NPROC)
 	$(SAMTOOLS) view $(SAMTOOLS_VIEWFLAGS) -Su $< \
 	| $(SAMTOOLS) sort $(SAMTOOLS_SORTFLAGS) - -o $@
 
+%.sam: %.unsorted.sam
+	$(SAMTOOLS) sort $(SAMTOOLS_SORTFLAGS) $< -o $@
+
 # Sort a BAM file
 %.sort.bam: %.bam
 	$(SAMTOOLS) sort $(SAMTOOLS_SORTFLAGS) $< $*.sort
