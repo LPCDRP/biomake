@@ -8,6 +8,10 @@ ifdef VEP_DIR
 VEPFLAGS += --dir $(VEP_DIR)
 endif
 
+ifdef VEP_SYNONYMS
+VEPFLAGS += --synonyms $(VEP_SYNONYMS)
+endif
+
 ifdef VEP_OFFLINE
 VEPFLAGS += --offline
 endif
