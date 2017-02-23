@@ -5,7 +5,8 @@
 
 define BWA_USAGE
 The following variables must be set:
-FASTQDIR	the path to the directory containing the input fastq.gz files
+BWA_READ1	suffix of forward read pair (example: 1P if your filename is sample_1P.fastq.gz)
+BWA_READ2	suffix of reverse read pair
 REFERENCE	the reference sequence to align reads to
 
 endef
@@ -26,9 +27,13 @@ ifndef REFERENCE
 $(error $(BWA_USAGE))
 endif
 
-ifndef FASTQDIR
+ifndef BWA_READ1
 $(error $(BWA_USAGE))
 endif
 
-%.bam: $(REFERENCE) $(FASTQDIR)/%_*.fastq.gz
+ifndef BWA_READ2
+$(error $(BWA_USAGE))
+endif
+
+%.bam: $(REFERENCE) %_$(BWA_READ1).fastq.gz %_$(BWA_READ2).fastq.gz
 	$(BWA) mem $(BWAFLAGS) $< $(filter-out $<, $^) | samtools view -Sbh - > $@.tmp && mv $@.tmp $@
