@@ -35,5 +35,5 @@ ifndef BWA_READ2
 $(error $(BWA_USAGE))
 endif
 
-%.bam: $(REFERENCE) %_$(BWA_READ1).fastq.gz %_$(BWA_READ2).fastq.gz
-	$(BWA) mem $(BWAFLAGS) $< $(filter-out $<, $^) | samtools view -Sbh - > $@.tmp && mv $@.tmp $@
+%.unsorted.sam: $(REFERENCE) %_$(BWA_READ1).fastq.gz %_$(BWA_READ2).fastq.gz
+	$(BWA) mem $(BWAFLAGS) $< $(filter-out $<, $^) > $@
