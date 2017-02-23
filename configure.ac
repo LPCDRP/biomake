@@ -1,4 +1,4 @@
-AC_INIT([biomake],[0.1.2],[aelghraoui@sdsu.edu])
+AC_INIT([biomake],[0.2.0],[aelghraoui@sdsu.edu])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_FILES([
  Makefile
