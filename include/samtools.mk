@@ -1,11 +1,6 @@
-#!/usr/bin/make -rRf
-
 #
 # samtools makefile rules
 # 
-
-.PHONY: samtools-header samtools-settings
-.DELETE_ON_ERROR:
 
 # samtools
 ifndef SAMTOOLS
@@ -69,18 +64,3 @@ endif
 %.idxstats.tsv: %.bam %.bam.bai
 	(printf 'tid\tlength\tnumMapped\tnumUnmapped\n' \
 		&& $(SAMTOOLS) idxstats $<) >$@
-
-##############################
-# settings
-##############################
-.PHONY: samtools-settings samtools-header
-
-print-%:
-	@echo '$*=$($*)'
-
-samtools-header:
-	@echo -e "\nsamtools.mk options"
-	@echo "========================="
-
-
-samtools-settings: samtools-header print-SAMTOOLS print-NPROC print-SAMTOOLS_OPTIONS print-REFERENCE
