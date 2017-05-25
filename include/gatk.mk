@@ -1,3 +1,4 @@
+outdir ?= .
 
 #
 # GATK makefile rules
@@ -50,7 +51,7 @@ endif
 ##############################
 # Generic genotyping, unifiedgenotyper
 ##############################
-%.vcf: %.bam
+$(outdir)/%.vcf: %.bam
 	$(GATK_COMMAND) -T UnifiedGenotyper $(GATK_UNIFIEDGENOTYPER_OPTIONS) -I $< -o $@.tmp && mv $@.tmp $@  && mv $@.tmp.idx $@.idx
 
 ##############################
@@ -63,7 +64,7 @@ ifneq ($(GATK_TARGET_REGIONS),)
 GATK_REALIGN_TARGET_CREATOR_OPTIONS+=-L $(GATK_TARGET_REGIONS)
 endif
 
-%.intervals: %.bam
+$(outdir)/%.intervals: %.bam
 	$(GATK_COMMAND) -T RealignerTargetCreator $(GATK_REALIGN_TARGET_CREATOR_OPTIONS) -I $< -o $@.tmp && mv $@.tmp $@
 
 ##############################
@@ -73,7 +74,7 @@ ifndef GATK_INDELREALIGNER_OPTIONS
 GATK_INDELREALIGNER_OPTIONS=-R $(REFERENCE)
 endif
 
-%.realign.bam: %.bam %.intervals
+$(outdir)/%.realign.bam: %.bam %.intervals
 	$(GATK_COMMAND) -T IndelRealigner $(GATK_INDELREALIGNER_OPTIONS) -o $@.tmp --targetIntervals $(word 2, $^) && mv $@.tmp $@  && mv $@.tmp.bai $@.bai
 
 ##############################
@@ -85,14 +86,14 @@ endif
 ifneq ($(GATK_TARGET_REGIONS),)
 GATK_BASERECALIBRATOR_OPTIONS+=-L $(GATK_TARGET_REGIONS)
 endif
-%.recal_data.grp: %.bam %.bai
+$(outdir)/%.recal_data.grp: %.bam %.bai
 	$(eval KNOWN_SITES=$(addprefix -knownSites ,$(GATK_KNOWN_SITES)))
 	$(GATK_COMMAND) -T BaseRecalibrator $(GATK_BASERECALIBRATOR_OPTIONS) $(KNOWN_SITES) -I $< -o $@.tmp && mv $@.tmp $@
 
 ifndef GATK_PRINTREADS_OPTIONS
 GATK_PRINTREADS_OPTIONS=-R $(REFERENCE)
 endif
-%.recal.bam: %.bam %.recal_data.grp
+$(outdir)/%.recal.bam: %.bam %.recal_data.grp
 	$(GATK_COMMAND) -T PrintReads $(GATK_PRINTREADS_OPTIONS) -I $< -BQSR $(lastword $^) -o $@.tmp && mv $@.tmp $@ && mv $@.tmp.bai $@.bai
 
 ##############################
@@ -101,7 +102,7 @@ endif
 ifndef GATK_CLIPREADS_OPTIONS
 GATK_CLIPREADS_OPTIONS=
 endif
-%.clip.bam: %.bam %.bai
+$(outdir)/%.clip.bam: %.bam %.bai
 	$(GATK_COMMAND) -T ClipReads $(GATK_CLIPREADS_OPTIONS) -I $< -o $@.tmp && mv $@.tmp $@ && mv $@.tmp.bai $@.bai
 
 ##############################
@@ -110,7 +111,7 @@ endif
 ifndef GATK_VARIANTFILTRATION_OPTIONS
 GATK_VARIANTFILTRATION_OPTIONS=
 endif
-%.filtered.vcf: %.vcf
+$(outdir)/%.filtered.vcf: %.vcf
 	$(GATK_COMMAND) -T VariantFiltration $(GATK_VARIANTFILTRATION_OPTIONS) -R $(REFERENCE) --variant $< --out $@.tmp && mv $@.tmp $@ && mv $@.tmp.idx $@.idx
 
 ##############################
@@ -125,7 +126,7 @@ endif
 ifneq ($(GATK_TARGET_REGIONS),)
 GATK_VARIANT_EVAL_OPTIONS+=-L $(GATK_TARGET_REGIONS)
 endif
-%.eval_metrics: %.vcf
+$(outdir)/%.eval_metrics: %.vcf
 	$(GATK_COMMAND) -T VariantEval $(GATK_VARIANT_EVAL_OPTIONS) -R $(REFERENCE) --eval $< -o $@.tmp && mv $@.tmp $@
 
 
@@ -138,7 +139,7 @@ endif
 ifndef GATK_VCFSUFFIX
 GATK_VCFSUFFIX=.vcf
 endif
-%.phased.vcf: %.bam %.bai
+$(outdir)/%.phased.vcf: %.bam %.bai
 	$(GATK_COMMAND) -T ReadBackedPhasing $(GATK_READBACKEDPHASING_OPTIONS) -I $< --variant $*$(GATK_VCFSUFFIX) -R $(REFERENCE) > $@.tmp && mv $@.tmp $@
 
 ##############################
@@ -147,7 +148,7 @@ endif
 ifndef GATK_SELECTSNPVARIANTS_OPTIONS
 GATK_SELECTSNPVARIANTS_OPTIONS=--selectTypeToInclude SNP
 endif
-%.snp.vcf: %.vcf
+$(outdir)/%.snp.vcf: %.vcf
 	$(GATK_COMMAND) -T SelectVariants $(GATK_SELECTSNPVARIANTS_OPTIONS) --variant $< --out $@.tmp -R $(REFERENCE) && mv $@.tmp $@
 
 ##############################
@@ -161,10 +162,10 @@ ifndef GATK_BAM_LIST
 GATK_BAM_LIST:=
 endif
 
-all.vcf: $(GATK_BAM_LIST) $(subst .bam,.bai,$(GATK_BAM_LIST))
+$(outdir)/all.vcf: $(GATK_BAM_LIST) $(subst .bam,.bai,$(GATK_BAM_LIST))
 	$(GATK_COMMAND) -T UnifiedGenotyper $(GATK_UNIFIEDGENOTYPER_OPTIONS) $(addprefix -I , $(GATK_BAM_LIST)) -o $@.tmp && mv $@.tmp $@
 
-all.phased.vcf: all.vcf $(GATK_BAM_LIST) $(subst .bam,.bai,$(GATK_BAM_LIST))
+$(outdir)/all.phased.vcf: all.vcf $(GATK_BAM_LIST) $(subst .bam,.bai,$(GATK_BAM_LIST))
 	$(GATK_COMMAND) -T ReadBackedPhasing $(GATK_READBACKEDPHASING_OPTIONS) $(addprefix -I , $(GATK_BAM_LIST)) --variant $< -R $(REFERENCE) -o $@.tmp && mv $@.tmp $@
 
 ##############################

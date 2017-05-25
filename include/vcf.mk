@@ -1,4 +1,5 @@
+outdir ?= .
 
-%.vcf.gz %.vcf.gz.tbi: %.vcf
-	bgzip -c $< > $<.gz \
-	&& tabix -p vcf $<.gz
+$(outdir)/%.vcf.gz: %.vcf
+	bgzip -c $< > $@ \
+	&& tabix -p vcf $@

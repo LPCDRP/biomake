@@ -1,3 +1,4 @@
+outdir ?= .
 
 BLASR ?= blasr
 
@@ -66,5 +67,5 @@ endif
 
 
 .SECONDEXPANSION:
-%.unsorted.sam: %.fofn $$(REFERENCE) $(BLASR_REGIONTABLE)
+$(outdir)/%.unsorted.sam: %.fofn $$(REFERENCE) $(BLASR_REGIONTABLE)
 	$(BLASR) $< $(word 2,$^) -sam -out $@ $(BLASRFLAGS)

@@ -1,3 +1,4 @@
+outdir ?= .
 
 #
 # plink makefile rules
@@ -13,19 +14,19 @@ ifndef PLINK_OPTIONS
 PLINK_OPTIONS=$(PLINK_OPTIONS_COMMON)
 endif
 
-%.r2.ld: %.ped
+$(outdir)/%.r2.ld: %.ped
 	$(PLINK) $(PLINK_OPTIONS)  --file $* --r2 --out $(@:.ld=) 
 
-%.r2.ld: %.bed
+$(outdir)/%.r2.ld: %.bed
 	$(PLINK) $(PLINK_OPTIONS)  --bfile $* --r2 --out $(@:.ld=)
 
-%.bed: %.ped
+$(outdir)/%.bed: %.ped
 	$(PLINK) $(PLINK_OPTIONS)  --file $* --make-bed --out $*
 
-%.blocks: %.bed
+$(outdir)/%.blocks: %.bed
 	$(PLINK) $(PLINK_OPTIONS)  --bfile $* --blocks --out $*
 
-%.chr$(PLINK_CHR).bed: %.bed
+$(outdir)/%.chr$(PLINK_CHR).bed: %.bed
 	$(PLINK) $(PLINK_OPTIONS)  --bfile $* --chr $(PLINK_CHR) --make-bed --out $*.chr$(PLINK_CHR)
 
 

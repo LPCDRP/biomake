@@ -1,3 +1,4 @@
+outdir ?= .
 
 include samtools.mk
 
@@ -29,8 +30,8 @@ endif
 
 PIEFLAGS += --nproc $(NPROC)
 
-%.hon.tails: $(addprefix %.tails,.sort.bam .sort.bam.bai)
+$(outdir)/%.hon.tails: $(addprefix %.tails,.sort.bam .sort.bam.bai)
 	Honey.py tails $(TAILSFLAGS) $< -o $@  2>&1 | tee tails.log
 
-%.sam: $(inputReads) $(REF)
+$(outdir)/%.sam: $(inputReads) $(REF)
 	Honey.py pie $(PIEFLAGS) $< $(word 2,$^) -o $@ 2>&1 | tee pie.log

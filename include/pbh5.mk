@@ -1,3 +1,4 @@
+outdir ?= .
 space=
 space+=
 comma=,
@@ -32,15 +33,15 @@ H5REPACK ?= h5repack
 
 
 .SECONDEXPANSION:
-%.cmp.h5: %.sam $$(REFERENCE)
+$(outdir)/%.cmp.h5: %.sam $$(REFERENCE)
 	$(SAMTOH5) $^ $@ $(SAMTOH5FLAGS)
 
-%.cmp.h5: %.bloated.cmp.h5 %.fofn
+$(outdir)/%.cmp.h5: %.bloated.cmp.h5 %.fofn
 	$(H5REPACK) -f GZIP=1 $< $@
 	$(LOADPULSES) $(word 2,$^)  $@ $(LOADPULSESFLAGS)
 	$(LOADCHEMISTRY) $(word 2,$^) $@
 
-%.bloated.cmp.h5: %.unsorted.cmp.h5
+$(outdir)/%.bloated.cmp.h5: %.unsorted.cmp.h5
 	$(CMPH5TOOLS) sort --deep $< --outFile $@
 
 
@@ -70,7 +71,7 @@ PBH5_REGIONTABLE ?= filtered_regions.$(subst $(space),.,$(subst =,_,$(strip $(PB
 endif
 
 
-%.filtered_regions.fofn %.$(PBH5_REGIONTABLE): %.fofn
+$(outdir)/%.filtered_regions.fofn $(outdir)/%.$(PBH5_REGIONTABLE): %.fofn
 	$(FILTERPLSH5) $(FILTERPLSH5FLAGS) $< \
 	--outputFofn $@ \
 	--outputDir $(basename $@)
@@ -78,7 +79,7 @@ endif
 
 # Input File Preparation
 
-%.fofn: %
+$(outdir)/%.fofn: %
 	$(RM) $@
 # Look only for bax.h5 files first.
 # They coexist with at least one bas.h5 file, but if both types are included in

@@ -1,3 +1,4 @@
+outdir ?= .
 
 MAKEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
 ifeq ($(findstring ngsvars.mk,$(MAKEFILE_LIST)),)
@@ -18,7 +19,7 @@ BEDTOOLS_BFILE=
 endif
 
 # coverageBed
-%.coverage: %.bam
+$(outdir)/%.coverage: %.bam
 	$(BEDTOOLS_HOME)/coverageBed $(BEDTOOLS_OPTIONS) -abam $< -b $(BEDTOOLS_BFILE) > $@.tmp && mv $@.tmp $@
 
 # Convert to and from pos files, where pos files correspond to the first 

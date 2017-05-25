@@ -1,3 +1,4 @@
+$(outdir)/outdir ?= .
 .DELETE_ON_ERROR:
 
 VEP ?= variant_effect_predictor.pl
@@ -48,6 +49,6 @@ ifdef VEP_EVERYTHING
 VEPFLAGS += --everything
 endif
 
-%.annotated.vcf: VEPFLAGS += --vcf
-%.vep %.annotated.vcf: %.vcf
+$(outdir)/%.annotated.vcf: VEPFLAGS += --vcf
+$(outdir)/%.vep $(outdir)/%.annotated.vcf: %.vcf
 	$(VEP) $(VEPFLAGS) -i $< -o $@

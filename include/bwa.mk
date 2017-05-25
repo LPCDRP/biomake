@@ -1,3 +1,4 @@
+outdir ?= .
 
 #
 # bwa makefile rules
@@ -35,5 +36,5 @@ ifndef BWA_READ2
 $(error $(BWA_USAGE))
 endif
 
-%.unsorted.sam: $(REFERENCE) %_$(BWA_READ1).fastq.gz %_$(BWA_READ2).fastq.gz
+$(outdir)/%.unsorted.sam: $(REFERENCE) %_$(BWA_READ1).fastq.gz %_$(BWA_READ2).fastq.gz
 	$(BWA) mem $(BWAFLAGS) $< $(filter-out $<, $^) > $@

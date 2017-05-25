@@ -1,3 +1,4 @@
+outdir ?= .
 
 #
 # picard makefile rules
@@ -42,94 +43,94 @@ PICARD_OPTIONS=$(PICARD_OPTIONS_COMMON)
 endif
 
 # Bam index
-%.bai: %.bam
+$(outdir)/%.bai: %.bam
 	$(PICARD_JAVA) $(PICARD_HOME)/BuildBamIndex.jar I=$< O=$@.tmp $(PICARD_OPTIONS) && mv $@.tmp $@
 
 ifndef PICARD_OPTION_SORTSAM
 PICARD_OPTION_SORTSAM=SORT_ORDER=coordinate
 endif
-%.sort.bam: %.bam
+$(outdir)/%.sort.bam: %.bam
 	$(PICARD_JAVA) $(PICARD_HOME)/SortSam.jar I=$< O=$@.tmp $(PICARD_OPTIONS) $(PICARD_OPTION_SORTSAM) && mv $@.tmp $@
 
-%.dup.bam: %.bam
+$(outdir)/%.dup.bam: %.bam
 	$(PICARD_JAVA) $(PICARD_HOME)/MarkDuplicates.jar I=$< O=$@.tmp $(PICARD_OPTIONS) M=$(@:.bam=).dup_metrics && mv $@.tmp $@
 
-%.interval_list: $(REFERENCE)
+$(outdir)/%.interval_list: $(REFERENCE)
 	$(PICARD_JAVA) $(PICARD_HOME)/CreateSequenceDictionary.jar R=$< O=$@.tmp && mv $@.tmp $@
 
-%.interval_list: %.bed $(subst .fa,.interval_list,$(REFERENCE))
+$(outdir)/%.interval_list: %.bed $(subst .fa,.interval_list,$(REFERENCE))
 	$(CAT) $(lastword $^) > $@.tmp
 	$(AWK) '{printf("%s\t%s\t%s\t%s\t%s\n", $$1,$$2,$$3,"+",$$4)}' $< >> $@.tmp && mv $@.tmp $@
 
 ##############################
 # Metrics calculations
 ##############################
-%.insert_metrics: %.bam %.bai
+$(outdir)/%.insert_metrics: %.bam %.bai
 	$(PICARD_JAVA) $(PICARD_HOME)/CollectInsertSizeMetrics.jar $(PICARD_OPTIONS) H=$*.hist I=$< O=$@.tmp R=$(REFERENCE) && mv $@.tmp $@
 
 # Dup metrics - see also %.dup.bam
-%.dup_metrics: %.bam %.bai
+$(outdir)/%.dup_metrics: %.bam %.bai
 	$(PICARD_JAVA) $(PICARD_HOME)/MarkDuplicates.jar $(PICARD_OPTIONS) I=$< M=$@.tmp O=$(@:.dup_metrics=).dup.bam && mv $@.tmp $@
 
-%.align_metrics: %.bam %.bai
+$(outdir)/%.align_metrics: %.bam %.bai
 	$(PICARD_JAVA) $(PICARD_HOME)/CollectAlignmentSummaryMetrics.jar $(PICARD_OPTIONS) I=$< O=$@.tmp R=$(REFERENCE) && mv $@.tmp $@
 
-%.hs_metrics: %.bam %.bai
+$(outdir)/%.hs_metrics: %.bam %.bai
 	$(PICARD_JAVA) $(PICARD_HOME)/CalculateHsMetrics.jar $(PICARD_OPTIONS) TI=$(PICARD_TARGET_REGIONS) BI=$(PICARD_BAIT_REGIONS) I=$< O=$@.tmp R=$(REFERENCE) && mv $@.tmp $@
 
 # Shorthands
 ifndef PICARD_DUPMETRICS_TARGETS
 PICARD_DUPMETRICS_TARGETS=$(subst .bam,.dup_metrics,$(wildcard $(INPUTDIR)/*/*recal.bam))
 endif
-dupmetrics: $(PICARD_DUPMETRICS_TARGETS)
+$(outdir)/dupmetrics: $(PICARD_DUPMETRICS_TARGETS)
 
 ifndef PICARD_HSMETRICS_TARGETS
 PICARD_HSMETRICS_TARGETS=$(subst .bam,.hs_metrics,$(wildcard $(INPUTDIR)/*/*recal.bam))
 endif
-hsmetrics: $(PICARD_HSMETRICS_TARGETS)
+$(outdir)/hsmetrics: $(PICARD_HSMETRICS_TARGETS)
 
 ifndef PICARD_INSERTMETRICS_TARGETS
 PICARD_INSERTMETRICS_TARGETS=$(subst .bam,.insert_metrics,$(wildcard $(INPUTDIR)/*/*recal.bam))
 endif
-insertmetrics: $(PICARD_INSERTMETRICS_TARGETS)
+$(outdir)/insertmetrics: $(PICARD_INSERTMETRICS_TARGETS)
 
 ifndef PICARD_ALIGNMETRICS_TARGETS
 PICARD_ALIGNMETRICS_TARGETS=$(subst .bam,.align_metrics,$(wildcard $(INPUTDIR)/*/*recal.bam))
 endif
-alignmetrics: $(PICARD_ALIGNMETRICS_TARGETS)
+$(outdir)/alignmetrics: $(PICARD_ALIGNMETRICS_TARGETS)
 
-metrics: dupmetrics hsmetrics insertmetrics alignmetrics
+$(outdir)/metrics: dupmetrics hsmetrics insertmetrics alignmetrics
 
 # Summaries
 # NB: these rules require scilife directory structure SAMPLE/FLOWCELL/SAMPLE.fastq
-align_metrics.txt: $(PICARD_ALIGNMETRICS_TARGETS)
+$(outdir)/align_metrics.txt: $(PICARD_ALIGNMETRICS_TARGETS)
 	@for f in $(sort $(PICARD_ALIGNMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc '{OFS="\t";if (NR==7) print $$0,"SAMPLE_ID","FLOWCELL", "INPUT_FILE"}' $$f; done | head -1 > $@.tmp;
 	@for f in $(sort $(PICARD_ALIGNMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc -v INPUT_FILE=$$f -v BN=$$(basename $$f) '{OFS="\t"; if (match(BN, SAMPLE)==0 || SAMPLE==".") {SAMPLE = FLOWCELL; FLOWCELL="NA"}  if (NR==8 || NR==9 || NR==10) print $$0,SAMPLE,FLOWCELL,INPUT_FILE}' $$f; done >> $@.tmp && mv $@.tmp $@;
 
-dup_metrics.txt: $(PICARD_DUPMETRICS_TARGETS)
+$(outdir)/dup_metrics.txt: $(PICARD_DUPMETRICS_TARGETS)
 	@for f in $(sort $(PICARD_DUPMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc '{OFS="\t";if (NR==7) print $$0,"SAMPLE_ID","FLOWCELL", "INPUT_FILE"}' $$f; done | head -1 > $@.tmp;
 	@for f in $(sort $(PICARD_DUPMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc -v INPUT_FILE=$$f -v BN=$$(basename $$f) '{OFS="\t";  if (match(BN, SAMPLE)==0 || SAMPLE==".") {SAMPLE = FLOWCELL; FLOWCELL="NA"} if (NR==8) print $$0,SAMPLE,FLOWCELL,INPUT_FILE}' $$f; done >> $@.tmp && mv $@.tmp $@;
 
-insert_metrics.txt: $(PICARD_INSERTMETRICS_TARGETS)
+$(outdir)/insert_metrics.txt: $(PICARD_INSERTMETRICS_TARGETS)
 	@for f in $(sort $(PICARD_INSERTMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc '{OFS="\t";if (NR==7) print $$0,"SAMPLE_ID","FLOWCELL", "INPUT_FILE"}' $$f; done | head -1 > $@.tmp;
 	@for f in $(sort $(PICARD_INSERTMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc -v INPUT_FILE=$$f -v BN=$$(basename $$f) '{OFS="\t"; if (match(BN, SAMPLE)==0 || SAMPLE==".") {SAMPLE = FLOWCELL; FLOWCELL="NA"} if (NR==8) print $$0,SAMPLE,FLOWCELL,INPUT_FILE}' $$f; done >> $@.tmp && mv $@.tmp $@;
 
-hs_metrics.txt: $(PICARD_HSMETRICS_TARGETS)
+$(outdir)/hs_metrics.txt: $(PICARD_HSMETRICS_TARGETS)
 	@for f in $(sort $(PICARD_HSMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc '{OFS="\t";if (NR==7) print $$0,"SAMPLE_ID","FLOWCELL", "INPUT_FILE"}' $$f; done | head -1 > $@.tmp;
 	@for f in $(sort $(PICARD_HSMETRICS_TARGETS)); do bn=$$(dirname $$f); fc=$$(basename $$bn); sampledir=$$(dirname $$bn); sample=$$(basename $$sampledir); $(AWK) -v SAMPLE=$$sample -v FLOWCELL=$$fc -v INPUT_FILE=$$f -v BN=$$(basename $$f) '{OFS="\t"; if (match(BN, SAMPLE)==0 || SAMPLE==".") {SAMPLE = FLOWCELL; FLOWCELL="NA"} if (NR==8) print $$0,SAMPLE,FLOWCELL,INPUT_FILE}' $$f; done >> $@.tmp && mv $@.tmp $@;
 
-metrics.txt: align_metrics.txt dup_metrics.txt insert_metrics.txt hs_metrics.txt
+$(outdir)/metrics.txt: align_metrics.txt dup_metrics.txt insert_metrics.txt hs_metrics.txt
 
 # Simple metrics plot functions
 ifndef PLOTMETRICS
 PLOTMETRICS=$(MAKEDIR)scripts/plotMetrics.R
 endif
-%_metrics.pdf: %_metrics.txt
+$(outdir)/%_metrics.pdf: %_metrics.txt
 	$(PLOTMETRICS) $< $@.tmp $* && mv $@.tmp $@
 
 
 # Add read group information
-%.rg.bam: %.bam
+$(outdir)/%.rg.bam: %.bam
 	java -Xmx2g -jar $(PICARD_HOME)/AddOrReplaceReadGroups.jar INPUT=$< OUTPUT=$@.tmp SORT_ORDER=coordinate \
 	RGID=$(firstword $(subst ., ,$*)) RGLB=lib RGPL=ILLUMINA RGPU=$(firstword $(subst ., ,$*)) \
 	RGSM=$(firstword $(subst /, ,$(firstword $(subst ., ,$*)))) CREATE_INDEX=true && mv $@.tmp $@; mv $@.tmp.bai $(@.bam=).bai
@@ -145,7 +146,7 @@ ifndef PICARD_MERGESAM_TARGETS
 PICARD_MERGESAM_TARGETS=
 endif
 
-%.merge.bam: 
+$(outdir)/%.merge.bam: 
 	@$(eval INPUTFILES=$(addprefix INPUT=,$(filter $(dir $*)%, $(PICARD_MERGESAM_TARGETS))))
 	$(PICARD_JAVA) $(PICARD_HOME)/MergeSamFiles.jar $(INPUTFILES) O=$@.tmp $(PICARD_OPTIONS_COMMON) $(PICARD_MERGESAM_OPTION) && mv $@.tmp $@ && mv $@.tmp.bai $(@:.bam=).bai
 

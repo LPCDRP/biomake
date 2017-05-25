@@ -1,3 +1,4 @@
+outdir ?= .
 
 VARCALLER ?= variantCaller
 
@@ -32,7 +33,7 @@ endif
 
 
 .SECONDEXPANSION:
-%.fasta %.fa %.fastq %.fq %.gff: %.cmp.h5 $$(REFERENCE) $$(REFERENCE).fai
+$(outdir)/%.fasta $(outdir)/%.fa $(outdir)/%.fastq $(outdir)/%.fq $(outdir)/%.gff: %.cmp.h5 $$(REFERENCE) $$(REFERENCE).fai
 	$(VARCALLER) $(VARCALLERFLAGS) $< \
 	--referenceFilename $(word 2,$^) \
 	$(foreach ext,$(strip $(VARCALLER_EXTS)), -o $*.$(ext)) -o $@
