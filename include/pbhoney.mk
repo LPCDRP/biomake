@@ -2,9 +2,20 @@ outdir ?= .
 
 include samtools.mk
 
-# Set the inputReads and reference -- change at your leisure
-# inputReads ?= corrected.fastq
-# reference ?= final.fasta
+define PBHONEY_USAGE
+The following variables must be set:
+INPUT	input reads
+REFERENCE	the reference sequence to align reads to
+
+endef
+
+ifndef INPUT
+$(error $(PBHONEY_USAGE))
+endif
+
+ifndef REFERENCE
+$(error $(PBHONEY_USAGE))
+endif
 
 NPROC ?= $(shell nproc)
 
@@ -33,5 +44,5 @@ PIEFLAGS += --nproc $(NPROC)
 $(outdir)/%.hon.tails: $(addprefix %.tails,.sort.bam .sort.bam.bai)
 	Honey.py tails $(TAILSFLAGS) $< -o $@  2>&1 | tee tails.log
 
-$(outdir)/%.sam: $(inputReads) $(REF)
+$(outdir)/%.sam: $(INPUT) $(REFERENCE)
 	Honey.py pie $(PIEFLAGS) $< $(word 2,$^) -o $@ 2>&1 | tee pie.log
