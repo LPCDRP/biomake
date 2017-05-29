@@ -42,7 +42,7 @@ endif
 PIEFLAGS += --nproc $(NPROC)
 
 $(outdir)/%.hon.tails: $(addprefix %.tails,.bam .bam.bai)
-	Honey.py tails $(TAILSFLAGS) $< -o $@  2>&1 | tee tails.log
+	Honey.py tails $(TAILSFLAGS) $< -o $@
 
 $(outdir)/%.unsorted.sam: $(INPUT) $(REFERENCE)
-	Honey.py pie $(PIEFLAGS) $< $(word 2,$^) -o $@ 2>&1 | tee pie.log
+	Honey.py pie $(PIEFLAGS) $< $(word 2,$^) -o $@
